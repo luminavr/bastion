@@ -1,0 +1,15 @@
+export LVM_SUPPRESS_FD_WARNINGS=1
+#версия релиза OpenShift, должна соответствовать тэгу в репозитории https://quay.io/repository/openshift-release-dev/ocp-release?tab=tags
+export OCP_RELEASE="4.3.0-x86_64"
+#локальный registry
+export LOCAL_REGISTRY='bastion.opsh4.tryout.local:5000'
+#название локального репозитория для зеркала
+export LOCAL_REPOSITORY='ocp4/openshift4'
+#название удаленного репозитория, который будет зеркалироваться, для прод среды должно быть openshift-release-dev
+export PRODUCT_REPO='openshift-release-dev'
+#расположение pull-secret для доступа к репозиториям, который мы модифицировали ранее
+export LOCAL_SECRET_JSON='/root/pull-secret-json.txt'
+#название релиза зеркала, для прод среды должно быть ocp-release
+export RELEASE_NAME="ocp-release"
+# окружение  для подключения к кластеру
+export KUBECONFIG=/root/openshift4/install/auth/kubeconfig

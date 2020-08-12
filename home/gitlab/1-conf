@@ -1,0 +1,19 @@
+##########################################################
+####  app properties
+##########################################################
+
+
+      #### service name
+      spring.application.name: ${APP_NAME}
+
+      #### service port
+      server.port=8080
+      
+      ####  actuator properties
+      management.server.port=9001
+      management.server.address=0.0.0.0
+
+      #### fluent properties
+      fluent.host: localhost
+      fluent.port: 24224
+

@@ -1,0 +1,68 @@
+{
+  "apiVersion": "v1",
+  "kind": "Namespace",
+  "metadata": {
+    "annotations": {
+      "openshift.io/description": "",
+      "openshift.io/display-name": "",
+      "openshift.io/requester": "system:admin",
+      "openshift.io/sa.scc.mcs": "s0:c24,c9",
+      "openshift.io/sa.scc.supplemental-groups": "1000570000/10000",
+      "openshift.io/sa.scc.uid-range": "1000570000/10000"
+    },
+    "creationTimestamp": "2020-07-22T12:19:21Z",
+    "deletionTimestamp": "2020-08-07T09:18:12Z",
+    "labels": {
+      "kiali.io/member-of": "istio-system",
+      "maistra.io/ignore-namespace": "ignore",
+      "maistra.io/member-of": "istio-system"
+    },
+    "name": "istio-system",
+    "resourceVersion": "44779400",
+    "selfLink": "/api/v1/namespaces/istio-system",
+    "uid": "dcb08126-ce31-4cfd-836e-8742b4d1b27c"
+  },
+  "spec": {
+    "finalizers": []
+  },
+  "status": {
+    "conditions": [
+      {
+        "lastTransitionTime": "2020-08-07T09:18:20Z",
+        "message": "All resources successfully discovered",
+        "reason": "ResourcesDiscovered",
+        "status": "False",
+        "type": "NamespaceDeletionDiscoveryFailure"
+      },
+      {
+        "lastTransitionTime": "2020-08-07T09:18:20Z",
+        "message": "All legacy kube types successfully parsed",
+        "reason": "ParsedGroupVersions",
+        "status": "False",
+        "type": "NamespaceDeletionGroupVersionParsingFailure"
+      },
+      {
+        "lastTransitionTime": "2020-08-07T09:18:20Z",
+        "message": "All content successfully deleted, may be waiting on finalization",
+        "reason": "ContentDeleted",
+        "status": "False",
+        "type": "NamespaceDeletionContentFailure"
+      },
+      {
+        "lastTransitionTime": "2020-08-07T09:18:20Z",
+        "message": "Some resources are remaining: servicemeshcontrolplanes.maistra.io has 1 resource instances, servicemeshmemberrolls.maistra.io has 1 resource instances",
+        "reason": "SomeResourcesRemain",
+        "status": "True",
+        "type": "NamespaceContentRemaining"
+      },
+      {
+        "lastTransitionTime": "2020-08-07T09:18:20Z",
+        "message": "Some content in the namespace has finalizers remaining: maistra.io/istio-operator in 2 resource instances",
+        "reason": "SomeFinalizersRemain",
+        "status": "True",
+        "type": "NamespaceFinalizersRemaining"
+      }
+    ],
+    "phase": "Terminating"
+  }
+}

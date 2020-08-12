@@ -1,0 +1,53 @@
+server:
+    verbosity: 1
+    username: "unbound"
+    directory: "/etc/unbound"
+    identity: "OpenShift4 DNS"
+    num-threads: 1
+    port: 53
+    interface: 0.0.0.0
+    do-ip4: yes
+    do-ip6: no
+    do-udp: yes
+    do-tcp: yes
+ 
+    access-control: 0.0.0.0/0 refuse
+    access-control: 172.19.19.0/24 allow
+    access-control: 10.10.10.0/24 allow
+    access-control: 127.0.0.0/8 allow
+    access-control: ::0/0 refuse
+    access-control: ::1 allow
+    access-control: ::ffff:127.0.0.1 allow
+ 
+    local-zone: "apps.opsh4.tryout.local." redirect
+ 
+    local-data: "bastion.opsh4.tryout.local. 300 IN A 172.19.19.93"
+    local-data: "master1.opsh4.tryout.local. 300 IN A 172.19.19.94"
+    local-data: "master2.opsh4.tryout.local. 300 IN A 172.19.19.95"
+    local-data: "node1.opsh4.tryout.local. 300 IN A 172.19.19.96"
+ 
+    local-data: "etcd-1.opsh4.tryout.local. 300 IN A 172.19.19.94"
+    local-data: "etcd-2.opsh4.tryout.local. 300 IN A 172.19.19.95"
+ 
+    local-data: "_etcd-server-ssl._tcp.opsh4.tryout.local IN SRV 0 10 2380 etcd-1.opsh4.tryout.local."
+    local-data: "_etcd-server-ssl._tcp.opsh4.tryout.local IN SRV 0 10 2380 etcd-2.opsh4.tryout.local."
+ 
+    local-data: "94.19.19.172.in-addr.arpa. 300 IN PTR master1.opsh4.tryout.local."
+    local-data: "95.19.19.172.in-addr.arpa. 300 IN PTR master2.opsh4.tryout.local."
+    local-data: "96.19.19.172.in-addr.arpa. 300 IN PTR node1.opsh4.tryout.local."
+ 
+    local-data: "api.opsh4.tryout.local. 300 IN A 172.19.19.94"
+    local-data: "api.opsh4.tryout.local. 300 IN A 172.19.19.95"
+ 
+    local-data: "api-int.opsh4.tryout.local. 300 IN A 172.19.19.94"
+    local-data: "api-int.opsh4.tryout.local. 300 IN A 172.19.19.95"
+ 
+    local-data: "94.19.19.172.in-addr.arpa. 300 IN PTR api.opsh4.tryout.local."
+    local-data: "95.19.19.172.in-addr.arpa. 300 IN PTR api.opsh4.tryout.local."
+    local-data: "94.19.19.172.in-addr.arpa. 300 IN PTR api-int.opsh4.tryout.local."
+    local-data: "95.19.19.172.in-addr.arpa. 300 IN PTR api-int.opsh4.tryout.local."
+ 
+    local-data: "apps.opsh4.tryout.local. 300 IN A 172.19.19.96"
+ 
+remote-control:
+    control-enable: no

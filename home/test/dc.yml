@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: List
+metadata: {}
+items:
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: gocalc
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    name: gocalc-crb
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: cluster-admin
+  subjects:
+    - kind: ServiceAccount
+      name: gocalc
+      namespace: test
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: gocalc
+      app.kubernetes.io/component: gocalc
+      app.kubernetes.io/instance: gocalc
+    name: gocalc
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations:
+        openshift.io/imported-from: gocalc
+      from:
+        kind: DockerImage
+        name: gocalc
+      importPolicy: {}
+      name: latest
+      referencePolicy:
+        type: ""
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: gocalc-dp
+    name: gocalc
+  spec:
+    replicas: 1
+    selector:
+      app: gocalc
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        labels:
+          app: gocalc
+      spec:
+        containers:
+        - image: vozerov/gocalc
+          name: gocalc
+          ports:
+          - containerPort: 7000
+            protocol: TCP
+          resources: {}
+          securityContext:
+            runAsUser: 1000
+        serviceAccountName: gocalc
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: gocalc-svc
+    name: gocalc-svc
+  spec:
+    ports:
+    - name: 8080-tcp  
+      protocol: TCP
+      port: 8080
+      targetPort: 7000
+    selector:
+      deploymentconfig: gocalc
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    labels:
+      app: gocalc-route
+    name: gocalc-route
+  spec:
+    port:
+      targetPort: 8080-tcp
+    to:
+      kind: Service
+      name: gocalc-svc
+      weight: 100
+    wildcardPolicy: None

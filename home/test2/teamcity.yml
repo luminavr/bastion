@@ -1,0 +1,147 @@
+apiVersion: v1
+kind: List
+metadata: {}
+items:
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: teamcity
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    name: teamcity-crb
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: cluster-admin
+  subjects:
+    - kind: ServiceAccount
+      name: teamcity
+      namespace: teamcity-test
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: teamcity-server
+      app.kubernetes.io/component: teamcity-server
+      app.kubernetes.io/instance: teamcity-server
+    name: teamcity-server
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations:
+        openshift.io/imported-from: jetbrains/teamcity-server
+      from:
+        kind: DockerImage
+        name: jetbrains/teamcity-server
+      importPolicy: {}
+      name: latest
+      referencePolicy:
+        type: ""
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: teamcity-server
+      app.kubernetes.io/component: teamcity-server
+      app.kubernetes.io/instance: teamcity-server
+    name: teamcity-server
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: teamcity-server
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        labels:
+          deploymentconfig: teamcity-server
+      spec:
+        containers:
+        - image: jetbrains/teamcity-server
+          name: teamcity-server
+          env:
+          - name: TEAMCITY_SERVER_MEM_OPTS
+            value: "-Xmx2g -XX:ReservedCodeCacheSize=350m"
+          ports:
+          - containerPort: 8111
+            protocol: TCP
+          resources: {}
+          securityContext:
+            runAsUser: 1000
+          volumeMounts:
+          - mountPath: /data/teamcity_server/datadir
+            name: teamcity-test-data
+          - mountPath: /opt/teamcity/logs
+            name: teamcity-test-logs
+        volumes:
+        - name: teamcity-test-data
+          persistentVolumeClaim:
+            claimName: teamcity-test-data
+        - name: teamcity-test-logs
+          persistentVolumeClaim:
+            claimName: teamcity-test-logs
+        securityContext: {}
+        serviceAccountName: teamcity
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - teamcity-server
+        from:
+          kind: ImageStreamTag
+          name: teamcity-server:latest
+      type: ImageChange
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: teamcity-test-data
+  spec:
+    accessModes:
+    - ReadWriteMany
+    resources:
+      requests:
+        storage: 2Gi
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: teamcity-test-logs
+  spec:
+    accessModes:
+    - ReadWriteMany
+    resources:
+      requests:
+        storage: 1Gi
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: teamcity-server
+      app.kubernetes.io/component: teamcity-server
+      app.kubernetes.io/instance: teamcity-server
+    name: teamcity-server
+  spec:
+    ports:
+    - name: 8111-tcp
+      port: 8111
+      protocol: TCP
+      targetPort: 8111
+    selector:
+      deploymentconfig: teamcity-server
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    labels:
+      app: teamcity-server
+    name: teamcity-server
+  spec:
+    port:
+      targetPort: 8111-tcp
+    to:
+      kind: Service
+      name: teamcity-server
+      weight: 100
+    wildcardPolicy: None

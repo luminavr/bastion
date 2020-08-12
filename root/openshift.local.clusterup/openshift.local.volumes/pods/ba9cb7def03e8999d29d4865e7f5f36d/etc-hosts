@@ -1,0 +1,5 @@
+# Kubernetes-managed hosts file (host network).
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+172.19.19.93 okd-test1 
+172.19.19.94 okd-test2
